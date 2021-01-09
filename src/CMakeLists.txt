@@ -20,10 +20,62 @@ target_sources(${TARGET}
 		
 		MainFrame.cpp
 		MainFrame.h
+
+		ImportDialog.cpp
+		ImportDialog.h
+		
+		ExportDialog.cpp
+		ExportDialog.h
+
+		AboutDialog.cpp
+		AboutDialog.h
+
+		PreferencesDialog.cpp
+		PreferencesDialog.h
+
+		wxAsciiArt.cpp
+		wxAsciiArt.h
+
+		AsciiArtData.cpp
+		AsciiArtData.h
+
+		ITool.cpp
+		ITool.h
+
+		ToolArrow.cpp
+		ToolArrow.h
+
+		ToolClass.cpp
+		ToolClass.h
+
+		ToolErase.cpp
+		ToolErase.h
+
+		ToolFreehand.cpp
+		ToolFreehand.h
+
+		ToolLine.cpp
+		ToolLine.h
+
+		ToolMove.cpp
+		ToolMove.h
+
+		ToolRectangle.cpp
+		ToolRectangle.h
+
+		ToolResize.cpp
+		ToolResize.h
+
+		ToolText.cpp
+		ToolText.h
 )
 
 target_compile_definitions(${TARGET} 
 	PRIVATE
+		-DGIT_COMMIT_HASH=${GIT_COMMIT_HASH}
+		-DGIT_BRANCH=${GIT_BRANCH}
+		-DGIT_DESCRIPTION=${GIT_DESCRIPTION}
+
 		${wxWidgets_DEFINITIONS}
 )
 

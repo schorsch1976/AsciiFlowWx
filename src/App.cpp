@@ -5,8 +5,10 @@ wxIMPLEMENT_APP(MyApp);
 
 bool MyApp::OnInit()
 {
+	wxImage::AddHandler(new wxPNGHandler);
+
 	MainFrame *frame =
-		new MainFrame("Hello World", wxPoint(50, 50), wxSize(450, 340));
+		new MainFrame("AsciiFlowWx", wxPoint(50, 50), wxSize(800, 600));
 	frame->Show(true);
 	return true;
 }

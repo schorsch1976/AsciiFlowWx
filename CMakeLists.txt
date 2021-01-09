@@ -145,10 +145,6 @@ execute_process(
   OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 
-add_definitions("-DGIT_COMMIT_HASH=${GIT_COMMIT_HASH}")
-add_definitions("-DGIT_BRANCH=${GIT_BRANCH}")
-add_definitions("-DGIT_DESCRIPTION=${GIT_DESCRIPTION}")
-
 ######################################################################
 # WX
 ######################################################################
@@ -159,4 +155,4 @@ find_package(wxWidgets REQUIRED)
 ######################################################################
 
 add_subdirectory(src)
-#add_subdirectory(man)
+add_subdirectory(man)
