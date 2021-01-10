@@ -93,6 +93,7 @@ private:
 	};
 	std::unordered_map<Btn, wxAnyButton *> m_btns;
 	std::unordered_map<Btn, wxBitmap> m_bitmap;
+	std::unordered_map<Btn, wxString> m_labels;
 
 	wxDECLARE_EVENT_TABLE();
 };

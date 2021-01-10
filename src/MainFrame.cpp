@@ -96,9 +96,6 @@ MainFrame::MainFrame(const wxString &title, const wxPoint &pos,
 	m_btns[Btn::Freehand] = m_tool2btn[Tool::Freehand];
 	m_btns[Btn::Erase] = m_tool2btn[Tool::Erase];
 
-	LoadBitmaps();
-	ApplyPrefs();
-
 	wxBoxSizer *leftsizer = new wxBoxSizer(wxVERTICAL);
 	leftsizer->Add(m_tool2btn[Tool::Move]);
 	leftsizer->Add(m_tool2btn[Tool::Rectangle]);
@@ -135,6 +132,9 @@ MainFrame::MainFrame(const wxString &title, const wxPoint &pos,
 	m_btns[Btn::Undo]->Enable(false);
 	m_btns[Btn::Redo]->Enable(false);
 	ActivateToolHelper(Tool::Text);
+
+	LoadBitmaps();
+	ApplyPrefs();
 }
 
 void MainFrame::OnClose(wxCloseEvent &event)
@@ -177,13 +177,30 @@ void MainFrame::LoadBitmaps()
 
 void MainFrame::ApplyPrefs()
 {
+	PreferencesDialog prefs;
+	int icon_size = prefs.GetIconSize();
+	wxLogDebug("IconSize: %d", icon_size);
+	ButtonStyle style = prefs.GetButtonStyle();
+
 	// TODO: This must come from prefs
-	wxSize target_size(50, 50);
-	wxDirection position = wxDirection::wxUP;
+	wxSize target_size(icon_size, icon_size);
+
+	if (m_labels.empty())
+	{
+		for (auto &c : m_btns)
+		{
+			m_labels[c.first] = c.second->GetLabel();
+		}
+	}
 
 	for (auto &c : m_btns)
 	{
-		wxBitmap &original_bmp = m_bitmap[c.first];
+		// shorter
+		Btn btn = c.first;
+		wxAnyButton *p_button = c.second;
+
+		// calculate the new one
+		wxBitmap &original_bmp = m_bitmap[btn];
 		wxImage original_image = original_bmp.ConvertToImage();
 
 		wxImage scaled_image =
@@ -191,9 +208,37 @@ void MainFrame::ApplyPrefs()
 								 target_size.GetHeight(), wxIMAGE_QUALITY_HIGH);
 		wxBitmap scaled_bmp(scaled_image);
 
-		c.second->SetBitmap(scaled_bmp);
-		c.second->SetBitmapPosition(position);
+		p_button->SetBitmap(wxNullBitmap);
+		switch (style)
+		{
+			case ButtonStyle::IconOnly:
+				p_button->SetBitmap(scaled_bmp);
+				p_button->SetBitmapPosition(wxDirection::wxUP);
+				p_button->SetLabel("");
+				break;
+
+			case ButtonStyle::TextOnly:
+				p_button->SetBitmap(wxNullBitmap);
+				break;
+
+			case ButtonStyle::TextBesidesIcon:
+				p_button->SetBitmap(scaled_bmp);
+				p_button->SetBitmapPosition(wxDirection::wxLEFT);
+				p_button->SetLabel(m_labels[btn]);
+				break;
+
+			default:
+			case ButtonStyle::TextUnderIcon:
+				p_button->SetBitmap(scaled_bmp);
+				p_button->SetBitmapPosition(wxDirection::wxUP);
+				p_button->SetLabel(m_labels[btn]);
+				break;
+		}
+		p_button->Update();
 	}
+
+	// force a new Layout
+	Layout();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -244,8 +289,12 @@ void MainFrame::OnRedo(wxCommandEvent &event)
 
 void MainFrame::OnPreferences(wxCommandEvent &event)
 {
-	PreferencesDialog dlg;
-	dlg.ShowModal();
+	{
+		PreferencesDialog dlg;
+		dlg.ShowModal();
+	}
+
+	ApplyPrefs();
 }
 void MainFrame::OnAbout(wxCommandEvent &event)
 {

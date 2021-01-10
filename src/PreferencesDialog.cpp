@@ -1,12 +1,12 @@
 #include "PreferencesDialog.h"
 
-#include <wx/spinctrl.h>
 #include <wx/choice.h>
+#include <wx/spinctrl.h>
 
 PreferencesDialog::PreferencesDialog()
 	: wxDialog(NULL, -1, "Preferences", wxDefaultPosition, wxSize(250, 230)),
 
-	m_config("AsciiFlowWx")
+	  m_config("AsciiFlowWx")
 {
 	Read();
 
@@ -19,45 +19,40 @@ PreferencesDialog::PreferencesDialog()
 	mp_choice->Append("TextOnly");
 	mp_choice->SetSelection(static_cast<int>(m_style));
 
-	mp_choice->Bind(wxEVT_CHOICE, [this](wxCommandEvent& evt)
-	{
-		OnChangeStyle(evt);
-	});
+	mp_choice->Bind(wxEVT_CHOICE,
+					[this](wxCommandEvent &evt) { OnChangeStyle(evt); });
 
 	mp_spinctl = new wxSpinCtrl(this, -1);
 	mp_spinctl->SetRange(32, 128);
 	mp_spinctl->SetValue(m_icon_size);
 
-	mp_spinctl->Bind(wxEVT_SPINCTRL, [this](wxSpinEvent& evt)
-	{
-		OnChangeIconSize(evt);
-	});
+	mp_spinctl->Bind(wxEVT_SPINCTRL,
+					 [this](wxSpinEvent &evt) { OnChangeIconSize(evt); });
 
-	mainsizer->Add(new wxStaticText(this, -1, "Button Style"));
-	mainsizer->Add(mp_choice);
-	mainsizer->Add(new wxStaticText(this, -1, "Iconsize"));
-	mainsizer->Add(mp_spinctl);
+	mainsizer->Add(new wxStaticText(this, -1, "Button Style"), 1,
+				   wxEXPAND | wxALL, 5);
+	mainsizer->Add(mp_choice, 1, wxEXPAND | wxALL, 5);
+	mainsizer->Add(new wxStaticText(this, -1, "Iconsize"), 1, wxEXPAND | wxALL,
+				   5);
+	mainsizer->Add(mp_spinctl, 1, wxEXPAND | wxALL, 5);
 
 	SetSizerAndFit(mainsizer);
 }
 
-ButtonStyle PreferencesDialog::GetButtonStyle()
-{
-	return m_style;
-}
+ButtonStyle PreferencesDialog::GetButtonStyle() { return m_style; }
 
-int PreferencesDialog::GetIconSize() const
-{
-	return m_icon_size;
-}
+int PreferencesDialog::GetIconSize() const { return m_icon_size; }
 
-void PreferencesDialog::OnChangeStyle(wxCommandEvent& evt)
+void PreferencesDialog::OnChangeStyle(wxCommandEvent &evt)
 {
+	m_style = static_cast<ButtonStyle>(mp_choice->GetSelection());
+	Write();
 }
-void PreferencesDialog::OnChangeIconSize(wxSpinEvent& evt)
+void PreferencesDialog::OnChangeIconSize(wxSpinEvent &evt)
 {
+	m_icon_size = static_cast<int>(mp_spinctl->GetValue());
+	Write();
 }
-
 
 void PreferencesDialog::Read()
 {
@@ -82,7 +77,6 @@ void PreferencesDialog::Read()
 		iconsize = 128;
 	}
 	m_icon_size = static_cast<int>(iconsize);
-
 }
 void PreferencesDialog::Write()
 {
