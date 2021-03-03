@@ -41,15 +41,20 @@ Building:
 
 Installing requirements:
 ========================
-- apt get install qt5-qmake qtbase5-dev cmake g++
+- apt install libwxgtk3.0-gtk3-dev cmake g++
 
 Building:
 =========
-- git clone https://github.com/schorsch1976/AsciiFlowQT.git
-- cd AsciiFlowQT
+- git clone https://github.com/schorsch1976/AsciiFlowWx.git
+- cd AsciiFlowWx
 - mkdir build
 - cd build
 - cmake ..
 - make
 
 Just start it by ./src/AsciiFlow
+
+Differences compared to [AsciiFlowQt](https://github.com/schorsch1976/AsciiFlowQT.git)
+====================================
+- Text editing understands Backspace
+- Under GTK3, the button can't remove a bitmap.
