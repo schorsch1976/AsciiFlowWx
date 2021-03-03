@@ -1,4 +1,4 @@
-Asciiflow QT Editor
+Asciiflow Wx Editor
 ===================
 
 Purpose:
