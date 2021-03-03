@@ -182,7 +182,6 @@ void MainFrame::ApplyPrefs()
 	wxLogDebug("IconSize: %d", icon_size);
 	ButtonStyle style = prefs.GetButtonStyle();
 
-	// TODO: This must come from prefs
 	wxSize target_size(icon_size, icon_size);
 
 	if (m_labels.empty())
@@ -234,6 +233,7 @@ void MainFrame::ApplyPrefs()
 				p_button->SetLabel(m_labels[btn]);
 				break;
 		}
+		p_button->Refresh();
 		p_button->Update();
 	}
 
