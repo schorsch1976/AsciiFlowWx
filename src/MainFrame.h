@@ -1,8 +1,8 @@
 #pragma once
 
 #include <wx/tglbtn.h>
-#include <wx/wx.h>
 #include <wx/toolbar.h>
+#include <wx/wx.h>
 
 #include "wxAsciiArt.h"
 
@@ -76,7 +76,7 @@ private:
 	void ActivateToolHelper(Tool tool);
 
 	wxAsciiArt *mp_asciiart;
-	//std::unordered_map<Tool, wxToggleButton *> m_tool2btn;
+	// std::unordered_map<Tool, wxToggleButton *> m_tool2btn;
 
 	enum class Btn
 	{
@@ -98,12 +98,14 @@ private:
 		Freehand,
 		Erase
 	};
-	//std::unordered_map<Btn, wxAnyButton *> m_btns;
+	// std::unordered_map<Btn, wxAnyButton *> m_btns;
 	std::unordered_map<Btn, wxBitmap> m_raw_bitmap;
 	std::unordered_map<Btn, wxBitmap> m_resized_bitmap;
 
-	wxToolBar* mp_top_toolbar;
-	wxToolBar* mp_left_toolbar;
+	wxToolBar *mp_top_toolbar;
+	wxToolBar *mp_left_toolbar;
+	bool m_undo_avail;
+	bool m_redo_avail;
 
 	wxDECLARE_EVENT_TABLE();
 };

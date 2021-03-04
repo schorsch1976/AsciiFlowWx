@@ -31,7 +31,7 @@ namespace XPM
 MainFrame::MainFrame(const wxString &title, const wxPoint &pos,
 					 const wxSize &size)
 	: wxFrame(NULL, wxID_ANY, title, pos, size), mp_top_toolbar(nullptr),
-	  mp_left_toolbar(nullptr)
+	  mp_left_toolbar(nullptr), m_undo_avail(false), m_redo_avail(false)
 {
 	CreateTopToolbar();
 	CreateLeftToolbar();
@@ -46,7 +46,7 @@ MainFrame::MainFrame(const wxString &title, const wxPoint &pos,
 	// Mid Line (including drawing area)
 	//////////////////////////////////////////////////////////////////////////////
 	wxBoxSizer *midsizer = new wxBoxSizer(wxHORIZONTAL);
-	mainsizer->Add(midsizer, 0, wxEXPAND | wxALL);
+	mainsizer->Add(midsizer, 1, wxEXPAND | wxALL);
 	midsizer->Add(mp_left_toolbar, 0, wxEXPAND | wxALL);
 
 	// also adds the tool buttons
@@ -73,10 +73,12 @@ MainFrame::MainFrame(const wxString &title, const wxPoint &pos,
 	//////////////////////////////////////////////////////////////////////////////
 	wxASSERT(mp_asciiart);
 	mp_asciiart->OnUndoAvailable([this](bool avail) {
-		mp_top_toolbar->EnableTool(ID_ButtonUndo, avail);
+		m_undo_avail = avail;
+		mp_top_toolbar->EnableTool(ID_ButtonUndo, m_undo_avail);
 	});
 	mp_asciiart->OnRedoAvailable([this](bool avail) {
-		mp_top_toolbar->EnableTool(ID_ButtonRedo, avail);
+		m_redo_avail = avail;
+		mp_top_toolbar->EnableTool(ID_ButtonRedo, m_redo_avail);
 	});
 }
 
@@ -155,9 +157,6 @@ void MainFrame::ApplyPrefs()
 	mp_top_toolbar->SetToolBitmapSize(target_size);
 	mp_left_toolbar->SetToolBitmapSize(target_size);
 
-	AddTopTools();
-	AddLeftTools();
-
 	long top_style = mp_top_toolbar->GetWindowStyle();
 	long left_style = mp_left_toolbar->GetWindowStyle();
 
@@ -207,63 +206,12 @@ void MainFrame::ApplyPrefs()
 	mp_top_toolbar->SetWindowStyle(top_style);
 	mp_left_toolbar->SetWindowStyle(left_style);
 
+	AddTopTools();
+	AddLeftTools();
+
 	mp_top_toolbar->Realize();
 	mp_left_toolbar->Realize();
 
-#if 0
-	if (m_labels.empty())
-	{
-		for (auto &c : m_btns)
-		{
-			m_labels[c.first] = c.second->GetLabel();
-		}
-	}
-
-	for (auto &c : m_btns)
-	{
-		// shorter
-		Btn btn = c.first;
-		wxAnyButton *p_button = c.second;
-
-		// calculate the new one
-		const wxBitmap &original_bmp = m_bitmap[btn];
-		wxImage original_image = original_bmp.ConvertToImage();
-
-		wxImage scaled_image =
-			original_image.Scale(target_size.GetWidth(),
-								 target_size.GetHeight(), wxIMAGE_QUALITY_HIGH);
-		wxBitmap scaled_bmp(scaled_image);
-
-		p_button->SetBitmap(wxNullBitmap);
-		switch (style)
-		{
-			case ButtonStyle::IconOnly:
-				p_button->SetBitmap(scaled_bmp);
-				p_button->SetBitmapPosition(wxDirection::wxUP);
-				p_button->SetLabel("");
-				break;
-
-			case ButtonStyle::TextOnly:
-				p_button->SetBitmap(wxNullBitmap);
-				break;
-
-			case ButtonStyle::TextBesidesIcon:
-				p_button->SetBitmap(scaled_bmp);
-				p_button->SetBitmapPosition(wxDirection::wxLEFT);
-				p_button->SetLabel(m_labels[btn]);
-				break;
-
-			default:
-			case ButtonStyle::TextUnderIcon:
-				p_button->SetBitmap(scaled_bmp);
-				p_button->SetBitmapPosition(wxDirection::wxUP);
-				p_button->SetLabel(m_labels[btn]);
-				break;
-		}
-		p_button->Refresh();
-		p_button->Update();
-	}
-#endif
 	// force a new Layout
 	Refresh();
 	Layout();
@@ -322,6 +270,8 @@ void MainFrame::AddTopTools()
 	mp_top_toolbar->AddTool(ID_ButtonRedo, "Redo", m_resized_bitmap[Btn::Redo],
 							wxNullBitmap, wxITEM_NORMAL, "Redo a change");
 
+	mp_top_toolbar->AddStretchableSpace();
+
 	mp_top_toolbar->AddTool(ID_ButtonPreferences, "Preferences",
 							m_resized_bitmap[Btn::Prefs], wxNullBitmap,
 							wxITEM_NORMAL, "Open Preference dialog");
@@ -333,15 +283,13 @@ void MainFrame::AddTopTools()
 	mp_top_toolbar->Realize();
 
 	wxASSERT(mp_top_toolbar);
-	mp_top_toolbar->EnableTool(ID_ButtonUndo, false);
-	mp_top_toolbar->EnableTool(ID_ButtonRedo, false);
+	mp_top_toolbar->EnableTool(ID_ButtonUndo, m_undo_avail);
+	mp_top_toolbar->EnableTool(ID_ButtonRedo, m_redo_avail);
 }
 
 void MainFrame::AddLeftTools()
 {
 	wxASSERT(mp_left_toolbar);
-	mp_left_toolbar->AddRadioTool(ID_ButtonToolMove, "Arrow",
-								  m_resized_bitmap[Btn::Arrow]);
 	mp_left_toolbar->AddRadioTool(ID_ButtonToolRectangle, "Rectangle",
 								  m_resized_bitmap[Btn::Rectangle]);
 	mp_left_toolbar->AddRadioTool(ID_ButtonToolResize, "Resize",
@@ -467,15 +415,6 @@ void MainFrame::ActivateToolHelper(Tool tool)
 {
 	wxASSERT(mp_asciiart);
 	mp_asciiart->ActivateToolHelper(tool);
-#if 0
-	for (auto &c : m_tool2btn)
-	{
-		c.second->SetValue(false);
-	}
-
-	wxASSERT(m_tool2btn[tool]);
-	m_tool2btn[tool]->SetValue(true);
-#endif
 }
 
 // clang-format off

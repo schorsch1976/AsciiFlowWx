@@ -48,7 +48,7 @@ wxNotebookPage *AboutDialog::CreatePageAsciiFlowWx(wxNotebook *parent)
 	padder->Add(sizer, 1, wxEXPAND | wxALL, 5);
 
 	sizer->Add(new wxStaticText(page, -1, "Homepage"), 0, wxEXPAND);
-	sizer->Add(AddLink(page, "https://github.com/schorsch1976/AsciFlowWx"), 0,
+	sizer->Add(AddLink(page, "https://github.com/schorsch1976/AsciiFlowWx"), 0,
 			   wxEXPAND);
 
 	sizer->Add(new wxStaticText(page, -1, "Version"), 0, wxEXPAND);

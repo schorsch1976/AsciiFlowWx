@@ -13,7 +13,6 @@ if(COMMAND cmake_policy)
 	cmake_policy(SET CMP0005 NEW)
 
 	# Work Around Policy CMP0020 is not set:
-	# Automatically link Qt executables to qtmain
 	cmake_policy(SET CMP0020 NEW)
 endif(COMMAND cmake_policy)
 
