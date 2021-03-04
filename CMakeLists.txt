@@ -97,21 +97,10 @@ if (WIN32)
 		# disable C4251
 		add_compile_options(/wd4251)
 		add_compile_options(/wd4275)
-
-		# noexcept
-		if (MSVC_TOOLset_VERSION VERSION_GREATER_EQUAL 140)
-			message(STATUS "MSVC_TOOLset_VERSION = ${MSVC_TOOLset_VERSION} : noexcept supported")
-			add_definitions(-DNOEXCEPT=noexcept )
-		ELSE (MSVC_TOOLset_VERSION VERSION_GREATER_EQUAL 140)
-			message(STATUS "MSVC_TOOLset_VERSION = ${MSVC_TOOLset_VERSION} : noexcept not supported")
-			add_definitions(-DNOEXCEPT= )
-		endif (MSVC_TOOLset_VERSION VERSION_GREATER_EQUAL 140)
-
 	endif (MSVC)
 
 	if(MSYS)
 		message(STATUS "This is Windows: MSYS")
-		add_definitions(-DNOEXCEPT=noexcept )
 		set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations)
 	endif(MSYS)
 endif (WIN32)

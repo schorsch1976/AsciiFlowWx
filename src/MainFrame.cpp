@@ -8,6 +8,8 @@
 #include <wx/gdicmn.h>
 #include <wx/msgdlg.h>
 
+namespace XPM
+{
 #include "ico/About.png.xpm"
 #include "ico/Arrow.png.xpm"
 #include "ico/Class.png.xpm"
@@ -24,6 +26,7 @@
 #include "ico/Resize.png.xpm"
 #include "ico/Text.png.xpm"
 #include "ico/Undo.png.xpm"
+} // ns XPM
 
 MainFrame::MainFrame(const wxString &title, const wxPoint &pos,
 					 const wxSize &size)
@@ -53,8 +56,8 @@ MainFrame::MainFrame(const wxString &title, const wxPoint &pos,
 
 	topsizer->AddStretchSpacer(1);
 
-	topsizer->Add(m_btns[Btn::Prefs], 0, wxALIGN_RIGHT, 5);
-	topsizer->Add(m_btns[Btn::About], 0, wxALIGN_RIGHT, 5);
+	topsizer->Add(m_btns[Btn::Prefs], 0, 0, 5);
+	topsizer->Add(m_btns[Btn::About], 0, 0, 5);
 
 	mainsizer->Add(topsizer, 0, wxEXPAND | wxALL, 5);
 
@@ -97,15 +100,15 @@ MainFrame::MainFrame(const wxString &title, const wxPoint &pos,
 	m_btns[Btn::Erase] = m_tool2btn[Tool::Erase];
 
 	wxBoxSizer *leftsizer = new wxBoxSizer(wxVERTICAL);
-	leftsizer->Add(m_tool2btn[Tool::Move]);
-	leftsizer->Add(m_tool2btn[Tool::Rectangle]);
-	leftsizer->Add(m_tool2btn[Tool::Resize]);
-	leftsizer->Add(m_tool2btn[Tool::Class]);
-	leftsizer->Add(m_tool2btn[Tool::Arrow]);
-	leftsizer->Add(m_tool2btn[Tool::Line]);
-	leftsizer->Add(m_tool2btn[Tool::Text]);
-	leftsizer->Add(m_tool2btn[Tool::Erase]);
-	leftsizer->Add(m_tool2btn[Tool::Freehand]);
+	leftsizer->Add(m_tool2btn[Tool::Move], 0, wxEXPAND | wxALIGN_TOP, 5);
+	leftsizer->Add(m_tool2btn[Tool::Rectangle], 0, wxEXPAND | wxALIGN_TOP, 5);
+	leftsizer->Add(m_tool2btn[Tool::Resize], 0, wxEXPAND | wxALIGN_TOP, 5);
+	leftsizer->Add(m_tool2btn[Tool::Class], 0, wxEXPAND | wxALIGN_TOP, 5);
+	leftsizer->Add(m_tool2btn[Tool::Arrow], 0, wxEXPAND | wxALIGN_TOP, 5);
+	leftsizer->Add(m_tool2btn[Tool::Line], 0, wxEXPAND | wxALIGN_TOP, 5);
+	leftsizer->Add(m_tool2btn[Tool::Text], 0, wxEXPAND | wxALIGN_TOP, 5);
+	leftsizer->Add(m_tool2btn[Tool::Erase], 0, wxEXPAND | wxALIGN_TOP, 5);
+	leftsizer->Add(m_tool2btn[Tool::Freehand], 0, wxEXPAND | wxALIGN_TOP, 5);
 
 	midsizer->Add(leftsizer, 0, wxEXPAND | wxALL, 5);
 
@@ -157,22 +160,23 @@ void MainFrame::OnClose(wxCloseEvent &event)
 
 void MainFrame::LoadBitmaps()
 {
-	m_bitmap[Btn::About] = wxBITMAP(About);
-	m_bitmap[Btn::Arrow] = wxBITMAP(Arrow);
-	m_bitmap[Btn::Class] = wxBITMAP(Class);
-	m_bitmap[Btn::Erase] = wxBITMAP(Erase);
-	m_bitmap[Btn::Export] = wxBITMAP(Export);
-	m_bitmap[Btn::Freehand] = wxBITMAP(Freehand);
-	m_bitmap[Btn::Import] = wxBITMAP(Import);
-	m_bitmap[Btn::Line] = wxBITMAP(Line);
-	m_bitmap[Btn::Move] = wxBITMAP(Move);
-	m_bitmap[Btn::New] = wxBITMAP(New);
-	m_bitmap[Btn::Prefs] = wxBITMAP(Prefs);
-	m_bitmap[Btn::Rectangle] = wxBITMAP(Rectangle);
-	m_bitmap[Btn::Redo] = wxBITMAP(Redo);
-	m_bitmap[Btn::Resize] = wxBITMAP(Resize);
-	m_bitmap[Btn::Text] = wxBITMAP(Text);
-	m_bitmap[Btn::Undo] = wxBITMAP(Undo);
+	// we always use XPMs on all platforms
+	m_bitmap[Btn::About] = wxBitmap(XPM::About_xpm, wxBITMAP_TYPE_XPM);
+	m_bitmap[Btn::Arrow] = wxBitmap(XPM::Arrow_xpm, wxBITMAP_TYPE_XPM);
+	m_bitmap[Btn::Class] = wxBitmap(XPM::Class_xpm, wxBITMAP_TYPE_XPM);
+	m_bitmap[Btn::Erase] = wxBitmap(XPM::Erase_xpm, wxBITMAP_TYPE_XPM);
+	m_bitmap[Btn::Export] = wxBitmap(XPM::Export_xpm, wxBITMAP_TYPE_XPM);
+	m_bitmap[Btn::Freehand] = wxBitmap(XPM::Freehand_xpm, wxBITMAP_TYPE_XPM);
+	m_bitmap[Btn::Import] = wxBitmap(XPM::Import_xpm, wxBITMAP_TYPE_XPM);
+	m_bitmap[Btn::Line] = wxBitmap(XPM::Line_xpm, wxBITMAP_TYPE_XPM);
+	m_bitmap[Btn::Move] = wxBitmap(XPM::Move_xpm, wxBITMAP_TYPE_XPM);
+	m_bitmap[Btn::New] = wxBitmap(XPM::New_xpm, wxBITMAP_TYPE_XPM);
+	m_bitmap[Btn::Prefs] = wxBitmap(XPM::Prefs_xpm, wxBITMAP_TYPE_XPM);
+	m_bitmap[Btn::Rectangle] = wxBitmap(XPM::Rectangle_xpm, wxBITMAP_TYPE_XPM);
+	m_bitmap[Btn::Redo] = wxBitmap(XPM::Redo_xpm, wxBITMAP_TYPE_XPM);
+	m_bitmap[Btn::Resize] = wxBitmap(XPM::Resize_xpm, wxBITMAP_TYPE_XPM);
+	m_bitmap[Btn::Text] = wxBitmap(XPM::Text_xpm, wxBITMAP_TYPE_XPM);
+	m_bitmap[Btn::Undo] = wxBitmap(XPM::Undo_xpm, wxBITMAP_TYPE_XPM);
 }
 
 void MainFrame::ApplyPrefs()
@@ -199,7 +203,7 @@ void MainFrame::ApplyPrefs()
 		wxAnyButton *p_button = c.second;
 
 		// calculate the new one
-		wxBitmap &original_bmp = m_bitmap[btn];
+		const wxBitmap &original_bmp = m_bitmap[btn];
 		wxImage original_image = original_bmp.ConvertToImage();
 
 		wxImage scaled_image =

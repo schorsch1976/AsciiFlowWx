@@ -2,7 +2,7 @@
 # executable type
 ############################################################################
 if (WIN32)
-	set(EXECUTABLE_TYPE Win32)
+	set(EXECUTABLE_TYPE WIN32)
 else()
 	set(EXECUTABLE_TYPE)
 endif()
