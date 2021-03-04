@@ -26,98 +26,39 @@ namespace XPM
 #include "ico/Resize.png.xpm"
 #include "ico/Text.png.xpm"
 #include "ico/Undo.png.xpm"
-} // ns XPM
+} // namespace XPM
 
 MainFrame::MainFrame(const wxString &title, const wxPoint &pos,
 					 const wxSize &size)
-	: wxFrame(NULL, wxID_ANY, title, pos, size)
+	: wxFrame(NULL, wxID_ANY, title, pos, size), mp_top_toolbar(nullptr),
+	  mp_left_toolbar(nullptr)
 {
+	CreateTopToolbar();
+	CreateLeftToolbar();
+
+	//////////////////////////////////////////////////////////////////////////////
+	// Create the layout
+	//////////////////////////////////////////////////////////////////////////////
 	wxBoxSizer *mainsizer = new wxBoxSizer(wxVERTICAL);
-
-	//////////////////////////////////////////////////////////////////////////////
-	// Top Button line
-	//////////////////////////////////////////////////////////////////////////////
-	wxBoxSizer *topsizer = new wxBoxSizer(wxHORIZONTAL);
-	m_btns[Btn::New] = new wxButton(this, ID_ButtonNew, "New");
-	m_btns[Btn::Import] = new wxButton(this, ID_ButtonImport, "Import");
-	m_btns[Btn::Export] = new wxButton(this, ID_ButtonExport, "Export");
-	m_btns[Btn::Undo] = new wxButton(this, ID_ButtonUndo, "Undo");
-	m_btns[Btn::Redo] = new wxButton(this, ID_ButtonRedo, "Redo");
-	m_btns[Btn::Prefs] =
-		new wxButton(this, ID_ButtonPreferences, "Preferences");
-	m_btns[Btn::About] = new wxButton(this, ID_ButtonAbout, "About");
-
-	topsizer->Add(m_btns[Btn::New], 0, wxEXPAND | wxALIGN_LEFT, 5);
-	topsizer->Add(m_btns[Btn::Import], 0, wxEXPAND | wxALIGN_LEFT, 5);
-	topsizer->Add(m_btns[Btn::Export], 0, wxEXPAND | wxALIGN_LEFT, 5);
-
-	topsizer->Add(m_btns[Btn::Undo], 0, wxALIGN_LEFT, 5);
-	topsizer->Add(m_btns[Btn::Redo], 0, wxALIGN_LEFT, 5);
-
-	topsizer->AddStretchSpacer(1);
-
-	topsizer->Add(m_btns[Btn::Prefs], 0, 0, 5);
-	topsizer->Add(m_btns[Btn::About], 0, 0, 5);
-
-	mainsizer->Add(topsizer, 0, wxEXPAND | wxALL, 5);
+	mainsizer->Add(mp_top_toolbar, 0, wxEXPAND | wxALL);
 
 	//////////////////////////////////////////////////////////////////////////////
 	// Mid Line (including drawing area)
 	//////////////////////////////////////////////////////////////////////////////
 	wxBoxSizer *midsizer = new wxBoxSizer(wxHORIZONTAL);
-	mainsizer->Add(midsizer, 1, wxEXPAND | wxALL, 5);
+	mainsizer->Add(midsizer, 0, wxEXPAND | wxALL);
+	midsizer->Add(mp_left_toolbar, 0, wxEXPAND | wxALL);
 
-	//////////////////////////////////////////////////////////////////////////////
-	// Mid Left Button line
-	//////////////////////////////////////////////////////////////////////////////
-	m_tool2btn[Tool::Arrow] =
-		new wxToggleButton(this, ID_ButtonToolArrow, "Arrow");
-	m_tool2btn[Tool::Class] =
-		new wxToggleButton(this, ID_ButtonToolClass, "Class");
-	m_tool2btn[Tool::Erase] =
-		new wxToggleButton(this, ID_ButtonToolErase, "Erase");
-	m_tool2btn[Tool::Freehand] =
-		new wxToggleButton(this, ID_ButtonToolFreehand, "Freehand");
-	m_tool2btn[Tool::Line] =
-		new wxToggleButton(this, ID_ButtonToolLine, "Line");
-	m_tool2btn[Tool::Move] =
-		new wxToggleButton(this, ID_ButtonToolMove, "Move");
-	m_tool2btn[Tool::Rectangle] =
-		new wxToggleButton(this, ID_ButtonToolRectangle, "Rectangle");
-	m_tool2btn[Tool::Resize] =
-		new wxToggleButton(this, ID_ButtonToolResize, "Resize");
-	m_tool2btn[Tool::Text] =
-		new wxToggleButton(this, ID_ButtonToolText, "Text");
-
-	m_btns[Btn::Move] = m_tool2btn[Tool::Move];
-	m_btns[Btn::Rectangle] = m_tool2btn[Tool::Rectangle];
-	m_btns[Btn::Resize] = m_tool2btn[Tool::Resize];
-	m_btns[Btn::Class] = m_tool2btn[Tool::Class];
-	m_btns[Btn::Arrow] = m_tool2btn[Tool::Arrow];
-	m_btns[Btn::Line] = m_tool2btn[Tool::Line];
-	m_btns[Btn::Text] = m_tool2btn[Tool::Text];
-	m_btns[Btn::Freehand] = m_tool2btn[Tool::Freehand];
-	m_btns[Btn::Erase] = m_tool2btn[Tool::Erase];
-
-	wxBoxSizer *leftsizer = new wxBoxSizer(wxVERTICAL);
-	leftsizer->Add(m_tool2btn[Tool::Move], 0, wxEXPAND | wxALIGN_TOP, 5);
-	leftsizer->Add(m_tool2btn[Tool::Rectangle], 0, wxEXPAND | wxALIGN_TOP, 5);
-	leftsizer->Add(m_tool2btn[Tool::Resize], 0, wxEXPAND | wxALIGN_TOP, 5);
-	leftsizer->Add(m_tool2btn[Tool::Class], 0, wxEXPAND | wxALIGN_TOP, 5);
-	leftsizer->Add(m_tool2btn[Tool::Arrow], 0, wxEXPAND | wxALIGN_TOP, 5);
-	leftsizer->Add(m_tool2btn[Tool::Line], 0, wxEXPAND | wxALIGN_TOP, 5);
-	leftsizer->Add(m_tool2btn[Tool::Text], 0, wxEXPAND | wxALIGN_TOP, 5);
-	leftsizer->Add(m_tool2btn[Tool::Erase], 0, wxEXPAND | wxALIGN_TOP, 5);
-	leftsizer->Add(m_tool2btn[Tool::Freehand], 0, wxEXPAND | wxALIGN_TOP, 5);
-
-	midsizer->Add(leftsizer, 0, wxEXPAND | wxALL, 5);
+	// also adds the tool buttons
+	LoadBitmaps();
+	ApplyPrefs();
 
 	//////////////////////////////////////////////////////////////////////////////
 	// Mid: Drawing area
 	//////////////////////////////////////////////////////////////////////////////
 	mp_asciiart = new wxAsciiArt(this);
 	wxASSERT(mp_asciiart);
-	midsizer->Add(mp_asciiart, 1, wxEXPAND | wxALL, 5);
+	midsizer->Add(mp_asciiart, 1, wxEXPAND | wxALL);
 
 	SetSizerAndFit(mainsizer); // use the sizer for layout and size window
 							   // accordingly and prevent it from being resized
@@ -125,19 +66,18 @@ MainFrame::MainFrame(const wxString &title, const wxPoint &pos,
 
 	Maximize();
 
+	ActivateToolHelper(Tool::Text);
+
 	//////////////////////////////////////////////////////////////////////////////
 	// Connect the callbacks (undo/redo avail)
 	//////////////////////////////////////////////////////////////////////////////
-	mp_asciiart->OnUndoAvailable(
-		[this](bool avail) { m_btns[Btn::Undo]->Enable(avail); });
-	mp_asciiart->OnRedoAvailable(
-		[this](bool avail) { m_btns[Btn::Redo]->Enable(avail); });
-	m_btns[Btn::Undo]->Enable(false);
-	m_btns[Btn::Redo]->Enable(false);
-	ActivateToolHelper(Tool::Text);
-
-	LoadBitmaps();
-	ApplyPrefs();
+	wxASSERT(mp_asciiart);
+	mp_asciiart->OnUndoAvailable([this](bool avail) {
+		mp_top_toolbar->EnableTool(ID_ButtonUndo, avail);
+	});
+	mp_asciiart->OnRedoAvailable([this](bool avail) {
+		mp_top_toolbar->EnableTool(ID_ButtonRedo, avail);
+	});
 }
 
 void MainFrame::OnClose(wxCloseEvent &event)
@@ -161,22 +101,42 @@ void MainFrame::OnClose(wxCloseEvent &event)
 void MainFrame::LoadBitmaps()
 {
 	// we always use XPMs on all platforms
-	m_bitmap[Btn::About] = wxBitmap(XPM::About_xpm, wxBITMAP_TYPE_XPM);
-	m_bitmap[Btn::Arrow] = wxBitmap(XPM::Arrow_xpm, wxBITMAP_TYPE_XPM);
-	m_bitmap[Btn::Class] = wxBitmap(XPM::Class_xpm, wxBITMAP_TYPE_XPM);
-	m_bitmap[Btn::Erase] = wxBitmap(XPM::Erase_xpm, wxBITMAP_TYPE_XPM);
-	m_bitmap[Btn::Export] = wxBitmap(XPM::Export_xpm, wxBITMAP_TYPE_XPM);
-	m_bitmap[Btn::Freehand] = wxBitmap(XPM::Freehand_xpm, wxBITMAP_TYPE_XPM);
-	m_bitmap[Btn::Import] = wxBitmap(XPM::Import_xpm, wxBITMAP_TYPE_XPM);
-	m_bitmap[Btn::Line] = wxBitmap(XPM::Line_xpm, wxBITMAP_TYPE_XPM);
-	m_bitmap[Btn::Move] = wxBitmap(XPM::Move_xpm, wxBITMAP_TYPE_XPM);
-	m_bitmap[Btn::New] = wxBitmap(XPM::New_xpm, wxBITMAP_TYPE_XPM);
-	m_bitmap[Btn::Prefs] = wxBitmap(XPM::Prefs_xpm, wxBITMAP_TYPE_XPM);
-	m_bitmap[Btn::Rectangle] = wxBitmap(XPM::Rectangle_xpm, wxBITMAP_TYPE_XPM);
-	m_bitmap[Btn::Redo] = wxBitmap(XPM::Redo_xpm, wxBITMAP_TYPE_XPM);
-	m_bitmap[Btn::Resize] = wxBitmap(XPM::Resize_xpm, wxBITMAP_TYPE_XPM);
-	m_bitmap[Btn::Text] = wxBitmap(XPM::Text_xpm, wxBITMAP_TYPE_XPM);
-	m_bitmap[Btn::Undo] = wxBitmap(XPM::Undo_xpm, wxBITMAP_TYPE_XPM);
+	m_raw_bitmap[Btn::About] = wxBitmap(XPM::About_xpm, wxBITMAP_TYPE_XPM);
+	m_raw_bitmap[Btn::Arrow] = wxBitmap(XPM::Arrow_xpm, wxBITMAP_TYPE_XPM);
+	m_raw_bitmap[Btn::Class] = wxBitmap(XPM::Class_xpm, wxBITMAP_TYPE_XPM);
+	m_raw_bitmap[Btn::Erase] = wxBitmap(XPM::Erase_xpm, wxBITMAP_TYPE_XPM);
+	m_raw_bitmap[Btn::Export] = wxBitmap(XPM::Export_xpm, wxBITMAP_TYPE_XPM);
+	m_raw_bitmap[Btn::Freehand] =
+		wxBitmap(XPM::Freehand_xpm, wxBITMAP_TYPE_XPM);
+	m_raw_bitmap[Btn::Import] = wxBitmap(XPM::Import_xpm, wxBITMAP_TYPE_XPM);
+	m_raw_bitmap[Btn::Line] = wxBitmap(XPM::Line_xpm, wxBITMAP_TYPE_XPM);
+	m_raw_bitmap[Btn::Move] = wxBitmap(XPM::Move_xpm, wxBITMAP_TYPE_XPM);
+	m_raw_bitmap[Btn::New] = wxBitmap(XPM::New_xpm, wxBITMAP_TYPE_XPM);
+	m_raw_bitmap[Btn::Prefs] = wxBitmap(XPM::Prefs_xpm, wxBITMAP_TYPE_XPM);
+	m_raw_bitmap[Btn::Rectangle] =
+		wxBitmap(XPM::Rectangle_xpm, wxBITMAP_TYPE_XPM);
+	m_raw_bitmap[Btn::Redo] = wxBitmap(XPM::Redo_xpm, wxBITMAP_TYPE_XPM);
+	m_raw_bitmap[Btn::Resize] = wxBitmap(XPM::Resize_xpm, wxBITMAP_TYPE_XPM);
+	m_raw_bitmap[Btn::Text] = wxBitmap(XPM::Text_xpm, wxBITMAP_TYPE_XPM);
+	m_raw_bitmap[Btn::Undo] = wxBitmap(XPM::Undo_xpm, wxBITMAP_TYPE_XPM);
+}
+void MainFrame::ResizeBitmaps(int size)
+{
+	wxSize target_size(size, size);
+	for (auto &c : m_raw_bitmap)
+	{
+		Btn btn = c.first;
+
+		// calculate the new one
+		const wxBitmap &original_bmp = c.second;
+		wxImage original_image = original_bmp.ConvertToImage();
+
+		wxImage scaled_image =
+			original_image.Scale(target_size.GetWidth(),
+								 target_size.GetHeight(), wxIMAGE_QUALITY_HIGH);
+
+		m_resized_bitmap[btn] = wxBitmap(scaled_image);
+	}
 }
 
 void MainFrame::ApplyPrefs()
@@ -186,8 +146,71 @@ void MainFrame::ApplyPrefs()
 	wxLogDebug("IconSize: %d", icon_size);
 	ButtonStyle style = prefs.GetButtonStyle();
 
-	wxSize target_size(icon_size, icon_size);
+	wxASSERT(mp_top_toolbar && mp_left_toolbar);
+	mp_top_toolbar->ClearTools();
+	mp_left_toolbar->ClearTools();
 
+	ResizeBitmaps(icon_size);
+	wxSize target_size(icon_size, icon_size);
+	mp_top_toolbar->SetToolBitmapSize(target_size);
+	mp_left_toolbar->SetToolBitmapSize(target_size);
+
+	AddTopTools();
+	AddLeftTools();
+
+	long top_style = mp_top_toolbar->GetWindowStyle();
+	long left_style = mp_left_toolbar->GetWindowStyle();
+
+	switch (style)
+	{
+		case ButtonStyle::IconOnly:
+			top_style &= ~wxTB_TEXT;
+			top_style &= ~wxTB_NOICONS;
+			top_style &= ~wxTB_HORZ_LAYOUT;
+
+			left_style &= ~wxTB_TEXT;
+			left_style &= ~wxTB_NOICONS;
+			left_style &= ~wxTB_HORZ_LAYOUT;
+			break;
+
+		case ButtonStyle::TextOnly:
+			top_style |= wxTB_TEXT;
+			top_style |= wxTB_NOICONS;
+			top_style &= ~wxTB_HORZ_LAYOUT;
+
+			left_style |= wxTB_TEXT;
+			left_style |= wxTB_NOICONS;
+			left_style &= ~wxTB_HORZ_LAYOUT;
+			break;
+
+		case ButtonStyle::TextBesidesIcon:
+			top_style |= wxTB_TEXT;
+			top_style &= ~wxTB_NOICONS;
+			top_style |= wxTB_HORZ_LAYOUT;
+
+			left_style |= wxTB_TEXT;
+			left_style &= ~wxTB_NOICONS;
+			left_style |= wxTB_HORZ_LAYOUT;
+			break;
+
+		default:
+		case ButtonStyle::TextUnderIcon:
+			top_style |= wxTB_TEXT;
+			top_style &= ~wxTB_NOICONS;
+			top_style &= ~wxTB_HORZ_LAYOUT;
+
+			left_style |= wxTB_TEXT;
+			left_style &= ~wxTB_NOICONS;
+			left_style &= ~wxTB_HORZ_LAYOUT;
+			break;
+	}
+	mp_top_toolbar->SetWindowStyle(top_style);
+	mp_left_toolbar->SetWindowStyle(left_style);
+
+	mp_top_toolbar->Realize();
+	mp_left_toolbar->Realize();
+
+#if 0
 	if (m_labels.empty())
 	{
 		for (auto &c : m_btns)
@@ -240,9 +263,103 @@ void MainFrame::ApplyPrefs()
 		p_button->Refresh();
 		p_button->Update();
 	}
-
+#endif
 	// force a new Layout
+	Refresh();
 	Layout();
+}
+
+void MainFrame::CreateTopToolbar()
+{
+	long style = wxTB_FLAT | wxTB_DOCKABLE | wxTB_TEXT;
+	style &= ~(wxTB_HORIZONTAL | wxTB_VERTICAL | wxTB_BOTTOM | wxTB_RIGHT |
+			   wxTB_HORZ_LAYOUT);
+	style |= wxTB_TOP;
+
+	if (mp_top_toolbar)
+	{
+		delete mp_top_toolbar;
+	}
+	mp_top_toolbar =
+		new wxToolBar(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, style);
+	wxASSERT(mp_top_toolbar);
+}
+
+void MainFrame::CreateLeftToolbar()
+{
+	long style = wxTB_FLAT | wxTB_DOCKABLE | wxTB_TEXT;
+	style &= ~(wxTB_HORIZONTAL | wxTB_VERTICAL | wxTB_BOTTOM | wxTB_RIGHT |
+			   wxTB_HORZ_LAYOUT);
+	style |= wxTB_LEFT;
+
+	if (mp_left_toolbar)
+	{
+		delete mp_left_toolbar;
+	}
+	mp_left_toolbar =
+		new wxToolBar(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, style);
+	wxASSERT(mp_left_toolbar);
+}
+
+void MainFrame::AddTopTools()
+{
+	wxASSERT(mp_top_toolbar);
+
+	mp_top_toolbar->AddTool(ID_ButtonNew, "New", m_resized_bitmap[Btn::New],
+							wxNullBitmap, wxITEM_NORMAL, "Create new file");
+
+	mp_top_toolbar->AddTool(ID_ButtonImport, "Import",
+							m_resized_bitmap[Btn::Import], wxNullBitmap,
+							wxITEM_NORMAL, "Import file or clipboard");
+
+	mp_top_toolbar->AddTool(ID_ButtonExport, "Export",
+							m_resized_bitmap[Btn::Export], wxNullBitmap,
+							wxITEM_NORMAL, "Export to file or clipboard");
+
+	mp_top_toolbar->AddTool(ID_ButtonUndo, "Undo", m_resized_bitmap[Btn::Undo],
+							wxNullBitmap, wxITEM_NORMAL, "Revert a change");
+
+	mp_top_toolbar->AddTool(ID_ButtonRedo, "Redo", m_resized_bitmap[Btn::Redo],
+							wxNullBitmap, wxITEM_NORMAL, "Redo a change");
+
+	mp_top_toolbar->AddTool(ID_ButtonPreferences, "Preferences",
+							m_resized_bitmap[Btn::Prefs], wxNullBitmap,
+							wxITEM_NORMAL, "Open Preference dialog");
+
+	mp_top_toolbar->AddTool(ID_ButtonAbout, "About",
+							m_resized_bitmap[Btn::About], wxNullBitmap,
+							wxITEM_NORMAL, "Open the About dialog");
+
+	mp_top_toolbar->Realize();
+
+	wxASSERT(mp_top_toolbar);
+	mp_top_toolbar->EnableTool(ID_ButtonUndo, false);
+	mp_top_toolbar->EnableTool(ID_ButtonRedo, false);
+}
+
+void MainFrame::AddLeftTools()
+{
+	wxASSERT(mp_left_toolbar);
+	mp_left_toolbar->AddRadioTool(ID_ButtonToolMove, "Arrow",
+								  m_resized_bitmap[Btn::Arrow]);
+	mp_left_toolbar->AddRadioTool(ID_ButtonToolRectangle, "Rectangle",
+								  m_resized_bitmap[Btn::Rectangle]);
+	mp_left_toolbar->AddRadioTool(ID_ButtonToolResize, "Resize",
+								  m_resized_bitmap[Btn::Resize]);
+	mp_left_toolbar->AddRadioTool(ID_ButtonToolClass, "Class",
+								  m_resized_bitmap[Btn::Class]);
+	mp_left_toolbar->AddRadioTool(ID_ButtonToolArrow, "Arrow",
+								  m_resized_bitmap[Btn::Arrow]);
+	mp_left_toolbar->AddRadioTool(ID_ButtonToolLine, "Line",
+								  m_resized_bitmap[Btn::Line]);
+	mp_left_toolbar->AddRadioTool(ID_ButtonToolText, "Text",
+								  m_resized_bitmap[Btn::Text]);
+	mp_left_toolbar->AddRadioTool(ID_ButtonToolErase, "Erase",
+								  m_resized_bitmap[Btn::Erase]);
+	mp_left_toolbar->AddRadioTool(ID_ButtonToolFreehand, "Freehand",
+								  m_resized_bitmap[Btn::Freehand]);
+
+	mp_left_toolbar->Realize();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -350,7 +467,7 @@ void MainFrame::ActivateToolHelper(Tool tool)
 {
 	wxASSERT(mp_asciiart);
 	mp_asciiart->ActivateToolHelper(tool);
-
+#if 0
 	for (auto &c : m_tool2btn)
 	{
 		c.second->SetValue(false);
@@ -358,30 +475,32 @@ void MainFrame::ActivateToolHelper(Tool tool)
 
 	wxASSERT(m_tool2btn[tool]);
 	m_tool2btn[tool]->SetValue(true);
+#endif
 }
 
 // clang-format off
 wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
 	EVT_CLOSE(MainFrame::OnClose)
 	
-	EVT_BUTTON(ID_ButtonNew, 			MainFrame::OnFileNew)
-	EVT_BUTTON(ID_ButtonImport, 		MainFrame::OnImport)
-	EVT_BUTTON(ID_ButtonExport, 		MainFrame::OnExport)
+	EVT_TOOL(ID_ButtonNew, 			MainFrame::OnFileNew)
+	EVT_TOOL(ID_ButtonImport, 		MainFrame::OnImport)
+	EVT_TOOL(ID_ButtonExport, 		MainFrame::OnExport)
 
-	EVT_BUTTON(ID_ButtonUndo,			MainFrame::OnUndo)
-	EVT_BUTTON(ID_ButtonRedo,			MainFrame::OnRedo)
+	EVT_TOOL(ID_ButtonUndo,			MainFrame::OnUndo)
+	EVT_TOOL(ID_ButtonRedo,			MainFrame::OnRedo)
 
-	EVT_BUTTON(ID_ButtonPreferences,	MainFrame::OnPreferences)
-	EVT_BUTTON(ID_ButtonAbout,			MainFrame::OnAbout)
+	EVT_TOOL(ID_ButtonPreferences,	MainFrame::OnPreferences)
+	EVT_TOOL(ID_ButtonAbout,		MainFrame::OnAbout)
 
-	EVT_TOGGLEBUTTON(ID_ButtonToolMove,		MainFrame::OnToolMove)
-	EVT_TOGGLEBUTTON(ID_ButtonToolRectangle,MainFrame::OnToolRectangle)
-	EVT_TOGGLEBUTTON(ID_ButtonToolResize, 	MainFrame::OnToolResize)
-	EVT_TOGGLEBUTTON(ID_ButtonToolClass,	MainFrame::OnToolClass)
-	EVT_TOGGLEBUTTON(ID_ButtonToolArrow,	MainFrame::OnToolArrow)
-	EVT_TOGGLEBUTTON(ID_ButtonToolLine,		MainFrame::OnToolLine)
-	EVT_TOGGLEBUTTON(ID_ButtonToolText,		MainFrame::OnToolText)
-	EVT_TOGGLEBUTTON(ID_ButtonToolErase,	MainFrame::OnToolErase)
-	EVT_TOGGLEBUTTON(ID_ButtonToolFreehand,	MainFrame::OnToolFreehand)
+	EVT_TOOL(ID_ButtonToolMove,		MainFrame::OnToolMove)
+	EVT_TOOL(ID_ButtonToolRectangle,MainFrame::OnToolRectangle)
+	EVT_TOOL(ID_ButtonToolResize, 	MainFrame::OnToolResize)
+	EVT_TOOL(ID_ButtonToolClass,	MainFrame::OnToolClass)
+	EVT_TOOL(ID_ButtonToolArrow,	MainFrame::OnToolArrow)
+	EVT_TOOL(ID_ButtonToolLine,		MainFrame::OnToolLine)
+	EVT_TOOL(ID_ButtonToolText,		MainFrame::OnToolText)
+	EVT_TOOL(ID_ButtonToolErase,	MainFrame::OnToolErase)
+	EVT_TOOL(ID_ButtonToolFreehand,	MainFrame::OnToolFreehand)
+
 wxEND_EVENT_TABLE()
 	// clang-format on

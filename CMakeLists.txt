@@ -97,6 +97,7 @@ if (WIN32)
 		# disable C4251
 		add_compile_options(/wd4251)
 		add_compile_options(/wd4275)
+		add_compile_options(/MP)
 	endif (MSVC)
 
 	if(MSYS)
