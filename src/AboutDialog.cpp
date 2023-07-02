@@ -105,11 +105,13 @@ wxNotebookPage *AboutDialog::CreatePageWxWidgets(wxNotebook *parent)
 wxCommandLinkButton *AboutDialog::AddLink(wxNotebookPage *page, wxString url)
 {
 	wxCommandLinkButton *link = new wxCommandLinkButton(page, -1, url);
-	link->Bind(wxEVT_BUTTON, [this, url](wxCommandEvent &) {
-		wxLogDebug("Link clicked: %s", url);
+	link->Bind(wxEVT_BUTTON,
+			   [this, url](wxCommandEvent &)
+			   {
+				   wxLogDebug("Link clicked: %s", url);
 
-		wxLaunchDefaultBrowser(url);
-	});
+				   wxLaunchDefaultBrowser(url);
+			   });
 
 	return link;
 }

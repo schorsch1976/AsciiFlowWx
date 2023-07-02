@@ -57,10 +57,12 @@ bool wxAsciiArt::Create(wxWindow *parent)
 // accessors...
 void wxAsciiArt::Init()
 {
-	m_data.Register([this](wxPoint area) {
-		InvalidateBestSize();
-		EnsureVisibility(area);
-	});
+	m_data.Register(
+		[this](wxPoint area)
+		{
+			InvalidateBestSize();
+			EnsureVisibility(area);
+		});
 
 	SetMinSize(wxSize{48 * CELLSIZE, 32 * CELLSIZE});
 	// SetInitialSize(DoGetBestSize());

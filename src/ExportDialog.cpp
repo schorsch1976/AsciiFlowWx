@@ -30,25 +30,28 @@ ExportDialog::ExportDialog(wxString data)
 	mainsizer->Add(save_btn, 0, wxEXPAND | wxCENTRE | wxALL, 5);
 	SetSizerAndFit(mainsizer);
 
-	save_btn->Bind(wxEVT_BUTTON, [this](wxCommandEvent &) {
-		wxFileDialog saveDlg(this, ("Save TXT1 file"), "", "",
-							 "TXT files (*.txt)|*.txt",
-							 wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+	save_btn->Bind(wxEVT_BUTTON,
+				   [this](wxCommandEvent &)
+				   {
+					   wxFileDialog saveDlg(this, ("Save TXT1 file"), "", "",
+											"TXT files (*.txt)|*.txt",
+											wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
-		if (wxID_CANCEL == saveDlg.ShowModal())
-		{
-			return;
-		}
+					   if (wxID_CANCEL == saveDlg.ShowModal())
+					   {
+						   return;
+					   }
 
-		// save the current contents in the file;
-		// this can be done with e.g. wxWidgets output streams:
-		wxFileOutputStream output_stream(saveDlg.GetPath());
-		if (!output_stream.IsOk())
-		{
-			wxLogError("Cannot save current contents in file '%s'.",
-					   saveDlg.GetPath());
-			return;
-		}
-		output_stream.GetFile()->Write(m_data);
-	});
+					   // save the current contents in the file;
+					   // this can be done with e.g. wxWidgets output streams:
+					   wxFileOutputStream output_stream(saveDlg.GetPath());
+					   if (!output_stream.IsOk())
+					   {
+						   wxLogError(
+							   "Cannot save current contents in file '%s'.",
+							   saveDlg.GetPath());
+						   return;
+					   }
+					   output_stream.GetFile()->Write(m_data);
+				   });
 }

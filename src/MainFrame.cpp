@@ -72,14 +72,18 @@ MainFrame::MainFrame(const wxString &title, const wxPoint &pos,
 	// Connect the callbacks (undo/redo avail)
 	//////////////////////////////////////////////////////////////////////////////
 	wxASSERT(mp_asciiart);
-	mp_asciiart->OnUndoAvailable([this](bool avail) {
-		m_undo_avail = avail;
-		mp_top_toolbar->EnableTool(ID_ButtonUndo, m_undo_avail);
-	});
-	mp_asciiart->OnRedoAvailable([this](bool avail) {
-		m_redo_avail = avail;
-		mp_top_toolbar->EnableTool(ID_ButtonRedo, m_redo_avail);
-	});
+	mp_asciiart->OnUndoAvailable(
+		[this](bool avail)
+		{
+			m_undo_avail = avail;
+			mp_top_toolbar->EnableTool(ID_ButtonUndo, m_undo_avail);
+		});
+	mp_asciiart->OnRedoAvailable(
+		[this](bool avail)
+		{
+			m_redo_avail = avail;
+			mp_top_toolbar->EnableTool(ID_ButtonRedo, m_redo_avail);
+		});
 }
 
 void MainFrame::OnClose(wxCloseEvent &event)
@@ -103,24 +107,37 @@ void MainFrame::OnClose(wxCloseEvent &event)
 void MainFrame::LoadBitmaps()
 {
 	// we always use XPMs on all platforms
-	m_raw_bitmap[Btn::About] = wxBitmap(XPM::About_xpm, wxBITMAP_TYPE_XPM);
-	m_raw_bitmap[Btn::Arrow] = wxBitmap(XPM::Arrow_xpm, wxBITMAP_TYPE_XPM);
-	m_raw_bitmap[Btn::Class] = wxBitmap(XPM::Class_xpm, wxBITMAP_TYPE_XPM);
-	m_raw_bitmap[Btn::Erase] = wxBitmap(XPM::Erase_xpm, wxBITMAP_TYPE_XPM);
-	m_raw_bitmap[Btn::Export] = wxBitmap(XPM::Export_xpm, wxBITMAP_TYPE_XPM);
+	m_raw_bitmap[Btn::About] =
+		wxBitmap(wxImage(XPM::About_xpm), wxBITMAP_TYPE_XPM);
+	m_raw_bitmap[Btn::Arrow] =
+		wxBitmap(wxImage(XPM::Arrow_xpm), wxBITMAP_TYPE_XPM);
+	m_raw_bitmap[Btn::Class] =
+		wxBitmap(wxImage(XPM::Class_xpm), wxBITMAP_TYPE_XPM);
+	m_raw_bitmap[Btn::Erase] =
+		wxBitmap(wxImage(XPM::Erase_xpm), wxBITMAP_TYPE_XPM);
+	m_raw_bitmap[Btn::Export] =
+		wxBitmap(wxImage(XPM::Export_xpm), wxBITMAP_TYPE_XPM);
 	m_raw_bitmap[Btn::Freehand] =
-		wxBitmap(XPM::Freehand_xpm, wxBITMAP_TYPE_XPM);
-	m_raw_bitmap[Btn::Import] = wxBitmap(XPM::Import_xpm, wxBITMAP_TYPE_XPM);
-	m_raw_bitmap[Btn::Line] = wxBitmap(XPM::Line_xpm, wxBITMAP_TYPE_XPM);
-	m_raw_bitmap[Btn::Move] = wxBitmap(XPM::Move_xpm, wxBITMAP_TYPE_XPM);
-	m_raw_bitmap[Btn::New] = wxBitmap(XPM::New_xpm, wxBITMAP_TYPE_XPM);
-	m_raw_bitmap[Btn::Prefs] = wxBitmap(XPM::Prefs_xpm, wxBITMAP_TYPE_XPM);
+		wxBitmap(wxImage(XPM::Freehand_xpm), wxBITMAP_TYPE_XPM);
+	m_raw_bitmap[Btn::Import] =
+		wxBitmap(wxImage(XPM::Import_xpm), wxBITMAP_TYPE_XPM);
+	m_raw_bitmap[Btn::Line] =
+		wxBitmap(wxImage(XPM::Line_xpm), wxBITMAP_TYPE_XPM);
+	m_raw_bitmap[Btn::Move] =
+		wxBitmap(wxImage(XPM::Move_xpm), wxBITMAP_TYPE_XPM);
+	m_raw_bitmap[Btn::New] = wxBitmap(wxImage(XPM::New_xpm), wxBITMAP_TYPE_XPM);
+	m_raw_bitmap[Btn::Prefs] =
+		wxBitmap(wxImage(XPM::Prefs_xpm), wxBITMAP_TYPE_XPM);
 	m_raw_bitmap[Btn::Rectangle] =
-		wxBitmap(XPM::Rectangle_xpm, wxBITMAP_TYPE_XPM);
-	m_raw_bitmap[Btn::Redo] = wxBitmap(XPM::Redo_xpm, wxBITMAP_TYPE_XPM);
-	m_raw_bitmap[Btn::Resize] = wxBitmap(XPM::Resize_xpm, wxBITMAP_TYPE_XPM);
-	m_raw_bitmap[Btn::Text] = wxBitmap(XPM::Text_xpm, wxBITMAP_TYPE_XPM);
-	m_raw_bitmap[Btn::Undo] = wxBitmap(XPM::Undo_xpm, wxBITMAP_TYPE_XPM);
+		wxBitmap(wxImage(XPM::Rectangle_xpm), wxBITMAP_TYPE_XPM);
+	m_raw_bitmap[Btn::Redo] =
+		wxBitmap(wxImage(XPM::Redo_xpm), wxBITMAP_TYPE_XPM);
+	m_raw_bitmap[Btn::Resize] =
+		wxBitmap(wxImage(XPM::Resize_xpm), wxBITMAP_TYPE_XPM);
+	m_raw_bitmap[Btn::Text] =
+		wxBitmap(wxImage(XPM::Text_xpm), wxBITMAP_TYPE_XPM);
+	m_raw_bitmap[Btn::Undo] =
+		wxBitmap(wxImage(XPM::Undo_xpm), wxBITMAP_TYPE_XPM);
 }
 void MainFrame::ResizeBitmaps(int size)
 {
@@ -329,7 +346,8 @@ void MainFrame::OnFileNew(wxCommandEvent &event)
 }
 void MainFrame::OnImport(wxCommandEvent &event)
 {
-	auto cb = [this](wxString data) {
+	auto cb = [this](wxString data)
+	{
 		if (data.size())
 		{
 			mp_asciiart->ImportData(data);
